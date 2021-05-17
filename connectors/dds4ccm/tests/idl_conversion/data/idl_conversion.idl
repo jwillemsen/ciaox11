@@ -203,7 +203,7 @@ module UnionTest
   typedef long _module;
   union B03;
   typedef sequence <B03> B03List;
-  union B03 switch (long)
+  union B03 switch (_module)
   {
     case 2: short b_03_3;
     case 3: _module b_03_4;
