@@ -97,7 +97,7 @@ namespace DDSX11
 
     if (publisher)
       {
-        if (DDS_ProxyEntityManager::register_publisher_proxy (publisher))
+        if (DDS_ProxyEntityManager::register_publisher_proxy (publisher, native_pub))
           {
             DDSX11_IMPL_LOG_DEBUG ("DDS_DomainParticipant_proxy::create_publisher - "
               << "Successfully created and registered a publisher.");
@@ -169,7 +169,7 @@ namespace DDSX11
       }
     else
       {
-        if (!DDS_ProxyEntityManager::unregister_publisher_proxy (handle))
+        if (!DDS_ProxyEntityManager::unregister_publisher_proxy (native_pub, handle))
           {
             DDSX11_IMPL_LOG_ERROR ("DDS_DomainParticipant_proxy::delete_publisher - "
               << "Error: Can't unregister publisher proxy for <" <<handle << ">");
@@ -253,7 +253,7 @@ namespace DDSX11
     if (subscriber)
       {
         // Register the fresh created proxy in the proxy entity manager
-        if (DDS_ProxyEntityManager::register_subscriber_proxy (subscriber))
+        if (DDS_ProxyEntityManager::register_subscriber_proxy (subscriber, native_sub))
           {
             DDSX11_IMPL_LOG_DEBUG ("DDS_DomainParticipant_proxy::create_subscriber - "
               << "Successfully created and registered a subscriber.");
@@ -326,7 +326,7 @@ namespace DDSX11
       }
     else
       {
-        if (!DDS_ProxyEntityManager::unregister_subscriber_proxy (handle))
+        if (!DDS_ProxyEntityManager::unregister_subscriber_proxy (native_sub, handle))
           {
             DDSX11_IMPL_LOG_ERROR ("DDS_DomainParticipant_proxy::delete_subscriber - "
               << "Error: Can't unregister subscriber proxy for <" << handle << ">");
@@ -456,7 +456,7 @@ namespace DDSX11
 
     if (topic_reference)
       {
-        if (DDS_ProxyEntityManager::register_topic_proxy (topic_reference))
+        if (DDS_ProxyEntityManager::register_topic_proxy (topic_reference, dds_tp))
           {
             DDSX11_IMPL_LOG_DEBUG ("DDS_DomainParticipant_proxy::create_topic - "
               << "Successfully created and registered a Topic.");
@@ -533,7 +533,7 @@ namespace DDSX11
       }
     else
       {
-        if (!DDS_ProxyEntityManager::unregister_topic_proxy (handle))
+        if (!DDS_ProxyEntityManager::unregister_topic_proxy (top, handle))
           {
             // The topic proxy is still used, so don't destruct the listener yet
             listener_guard.release ();
@@ -563,34 +563,27 @@ namespace DDSX11
   {
     DDSX11_LOG_TRACE ("DDS_DomainParticipant_proxy::find_topic");
 
-    // Go to the native DDS implementation and see if the topic exists there
-    // when it exists we need to find the existing topic within our PEM which
-    // increments its refcount with 1 because
-    // on each topic returned by find_topic also a delete_topic needs
-    // to be called.
     DDS_Native::DDS::Topic_var native_topic =
       this->native_entity ()->find_topic (
         ::DDSX11::traits<std::string>::in (impl_name),
         ::DDSX11::traits< ::DDS::Duration_t>::in (timeout));
 
-    IDL::traits< ::DDS::Topic>::ref_type topic =
-      DDS_ProxyEntityManager::get_topic_proxy (native_topic);
+    IDL::traits< ::DDS::Topic>::ref_type topic_reference =
+      TAOX11_CORBA::make_reference<DDS_Topic_proxy> (native_topic);
 
-    if (topic)
+    if (topic_reference)
       {
-        // We have an existing topic proxy so we register it again to increment
-        // its refcount with 1
-        if (!DDS_ProxyEntityManager::register_topic_proxy (topic))
+        if (DDS_ProxyEntityManager::register_topic_proxy (topic_reference, native_topic))
           {
-            DDSX11_IMPL_LOG_ERROR ("DDS_DomainParticipant_proxy::find_topic - "
-              << "Error: Error registering topic proxy for <" << impl_name << "> again <"
-              << topic->get_instance_handle () << ">");
+            DDSX11_IMPL_LOG_DEBUG ("DDS_DomainParticipant_proxy::find_topic - "
+              << "Successfully created and registered a Topic.");
           }
         else
           {
-            DDSX11_IMPL_LOG_DEBUG ("DDS_DomainParticipant_proxy::find_topic - "
-              << "Registered topic proxy for <" << impl_name << "> again <"
-              << topic->get_instance_handle () << ">");
+            topic_reference = nullptr;
+
+            DDSX11_IMPL_LOG_ERROR ("DDS_DomainParticipant_proxy::find_topic - "
+              << "ERROR: Failed to register a topic proxy.");
           }
       }
     else
@@ -599,7 +592,7 @@ namespace DDSX11
           << "Didn't find a topic for <" << impl_name << ">");
       }
 
-    return topic;
+    return topic_reference;
   }
 
 
