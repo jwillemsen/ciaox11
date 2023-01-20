@@ -1,9 +1,6 @@
 /**
  * @file    ccm_executorlocator.idl
  * @author  Johnny Willemsen
- *
- * @brief   Compliant with OMG formal/2021-02-04 Section 6.5.3.3
- *
  * @copyright Copyright (c) Remedy IT Expertise BV
  */
 
@@ -27,8 +24,15 @@ module CIAOX11
 
   local interface ExecutorLocator
   {
-    /// Configure the component (incl. attributes)
-    void configure (inout Components::ConfigValues config)
+    /// Called directly after the creation of the executor locator
+    /// as first call in its lifecycle. The executor can return
+    /// optional constraints to the deployment tooling using
+    /// @a constraints.
+    void init (inout Components::ConfigValues constraints);
+
+    /// Configure the component (incl. attributes passed as
+    /// name/value pair through @a config)
+    void configure (in Components::ConfigValues config)
       raises (ConfigurationError);
 
     /// Obtain the component executor.
