@@ -11,6 +11,9 @@
 
 //@@{__RIDL_REGEN_MARKER__} - BEGIN : App_Reporter_Impl[user_includes]
 #include "ciaox11/testlib/ciaox11_testlog.h"
+#include "ciaox11/deployment/handlers/ciaox11_state.h"
+#include "ciaox11/config/ciaox11_config_valuesC.h"
+#include "exf/deployment/core/ciaox11_exf_util.h"
 //@@{__RIDL_REGEN_MARKER__} - END : App_Reporter_Impl[user_includes]
 
 //@@{__RIDL_REGEN_MARKER__} - BEGIN : App_Reporter_Impl[user_global_impl]
@@ -122,6 +125,18 @@ namespace App_Reporter_Impl
   Reporter_exec_i::get_do_presenter ()
   {
   //@@{__RIDL_REGEN_MARKER__} - BEGIN : App_Reporter_Impl::Reporter_exec_i[get_do_presenter]
+      Components::ConfigValues config;
+      bool found = false;
+    DEPLOYMENT_STATE->fetch_component_configuration (this->context_->instance_id(), config);
+    for (const Components::ConfigValue& cval : config)
+    {
+      if (cval.name () == CIAOX11::ExF::SCHEDULING_LANE_REF)
+      {
+    CIAOX11_TEST_INFO << "FOUND SCHEDULER" << std::endl;
+    found = true;
+      }
+    }
+    if (!found) CIAOX11_TEST_INFO << "FOUND NO SCHEDULER" << std::endl;
     if (!this->do_presenter_)
     {
       this->do_presenter_ = CORBA::make_reference <do_presenter_exec_i> (this->context_);
