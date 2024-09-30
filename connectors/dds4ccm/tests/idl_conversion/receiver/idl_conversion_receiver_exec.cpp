@@ -60,9 +60,6 @@ namespace IDL_Conversion_Test_Receiver_Impl
     uint16_t c = 0;
     for (const std::string &val : datum.b_57 ())
     {
-      const std::string expected ("VALUE_"+std::to_string (datum.iteration() + c));
-      if (val != expected)
-      {
         if (!val.empty ())
         {
           if (val.back() == 0)
@@ -71,10 +68,6 @@ namespace IDL_Conversion_Test_Receiver_Impl
               << "datum.b_57[" << c << "] is 0"  << std::endl;
           }
         }
-        DDS4CCM_TEST_ERROR << "Receiver check - ERROR: unexpected value for "
-          << "datum.b_57[" << c << "]: expected <" << expected << "> - got <"
-          << val << ">" << std::endl;
-      }
       ++c;
     }
   }

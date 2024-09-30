@@ -16,7 +16,6 @@ module Example {
   @nested(FALSE)
   struct IDLConversionMessage {
     B57 b_57;
-    short iteration;
   };
 };
 

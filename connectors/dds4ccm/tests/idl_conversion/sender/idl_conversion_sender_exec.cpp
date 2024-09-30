@@ -270,9 +270,7 @@ namespace IDL_Conversion_Test_Sender_Impl
 
       std::string const key ("KEY_"+std::to_string (this->last_key_));
       Example::IDLConversionMessage msg (
-          b57,
-          this->last_iteration_
-                                         );
+          b57);
 
       IDL::traits < Example::IDLConversionTestConnector::Writer>::ref_type writer =
         this->context_->get_connection_info_write_data ();
