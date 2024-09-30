@@ -89,8 +89,8 @@ namespace IDL_Conversion_Test_Receiver_Impl
     //@{
     //@@{__RIDL_REGEN_MARKER__} - BEGIN : IDL_Conversion_Test_Receiver_Impl::info_out_data_listener_exec_i[user_private_ops]
     void check_datum (const ::Example::IDLConversionMessage& datum);
-    void check_b31_array (const std::array< Example::B31, 2 > &to_check, int32_t iter);
-    void check_standard_types (const ::Example::IDLConversionMessage& datum);
+    //void check_b31_array (const std::array< Example::B31, 2 > &to_check, int32_t iter);
+    //void check_standard_types (const ::Example::IDLConversionMessage& datum);
     //@@{__RIDL_REGEN_MARKER__} - END : IDL_Conversion_Test_Receiver_Impl::info_out_data_listener_exec_i[user_private_ops]
     //@}
   };

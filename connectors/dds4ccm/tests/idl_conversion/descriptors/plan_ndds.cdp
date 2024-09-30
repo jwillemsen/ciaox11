@@ -303,7 +303,7 @@
           <kind>tk_ushort</kind>
         </type>
         <value>
-          <ushort>30</ushort>
+          <ushort>6</ushort>
         </value>
       </value>
     </configProperty>
